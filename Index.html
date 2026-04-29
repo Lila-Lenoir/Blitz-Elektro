@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blitz Elektro München</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --gold: #C8982A; --gold-light: #F2D98A; --gold-dark: #7A5B10;
+    --ink: #1A1A18; --ink-mid: #3D3D38; --paper: #FAFAF7;
+    --paper-warm: #F4F2EA; --muted: #7A7A72; --border: rgba(0,0,0,0.1);
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--paper); color: var(--ink); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+
+  nav { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 3rem; border-bottom: 1px solid var(--border); background: var(--paper); position: sticky; top: 0; z-index: 100; }
+  .nav-logo { display: flex; align-items: center; gap: 10px; }
+  .nav-logo .bolt { width: 32px; height: 32px; background: var(--gold); clip-path: polygon(60% 0%, 100% 0%, 40% 50%, 80% 50%, 0% 100%, 20% 55%, -5% 55%, 60% 0%); }
+  .nav-logo span { font-family: 'DM Serif Display', serif; font-size: 1.3rem; letter-spacing: -0.02em; color: var(--ink); }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a { text-decoration: none; color: var(--muted); font-size: 0.875rem; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--ink); }
+  .nav-cta { background: var(--ink) !important; color: var(--paper) !important; padding: 0.5rem 1.25rem; border-radius: 100px; font-weight: 500 !important; }
+  .nav-cta:hover { background: var(--gold-dark) !important; color: white !important; }
+
+  .hero { display: grid; grid-template-columns: 1fr 1fr; min-height: 90vh; overflow: hidden; }
+  .hero-left { padding: 6rem 3rem 4rem; display: flex; flex-direction: column; justify-content: center; }
+  .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--paper-warm); border: 1px solid var(--border); padding: 0.35rem 0.875rem; border-radius: 100px; font-size: 0.8rem; color: var(--muted); margin-bottom: 2rem; width: fit-content; }
+  .hero-badge::before { content: ''; width: 6px; height: 6px; background: #4CAF50; border-radius: 50%; display: inline-block; }
+  h1 { font-family: 'DM Serif Display', serif; font-size: clamp(2.5rem, 5vw, 4rem); line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 1.5rem; }
+  h1 em { color: var(--gold); font-style: italic; }
+  .hero-sub { font-size: 1.05rem; color: var(--muted); max-width: 420px; margin-bottom: 2.5rem; font-weight: 300; line-height: 1.7; }
+  .hero-actions { display: flex; gap: 1rem; align-items: center; }
+  .btn-primary { background: var(--gold); color: white; padding: 0.85rem 2rem; border-radius: 100px; text-decoration: none; font-weight: 500; font-size: 0.95rem; transition: background 0.2s, transform 0.15s; border: none; cursor: pointer; display: inline-block; }
+  .btn-primary:hover { background: var(--gold-dark); transform: translateY(-1px); }
+  .btn-ghost { color: var(--ink); text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 6px; }
+  .btn-ghost::after { content: '→'; transition: transform 0.2s; }
+  .btn-ghost:hover::after { transform: translateX(4px); }
+  .hero-right { background: var(--ink); position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+  .hero-visual { position: relative; z-index: 2; text-align: center; color: white; padding: 3rem; }
+  .big-bolt { width: 140px; height: 140px; background: var(--gold); clip-path: polygon(60% 0%, 100% 0%, 40% 50%, 80% 50%, 0% 100%, 20% 55%, -5% 55%, 60% 0%); margin: 0 auto 2rem; animation: pulse 3s ease-in-out infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.85; transform: scale(1.04); } }
+  .hero-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; overflow: hidden; margin-top: 2.5rem; }
+  .stat { background: rgba(255,255,255,0.05); padding: 1.25rem 1rem; text-align: center; }
+  .stat-num { font-family: 'DM Serif Display', serif; font-size: 1.75rem; color: var(--gold-light); line-height: 1; display: block; margin-bottom: 0.25rem; }
+  .stat-label { font-size: 0.75rem; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.05em; }
+  .hero-grid-bg { position: absolute; inset: 0; background-image: linear-gradient(rgba(200,152,42,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(200,152,42,0.07) 1px, transparent 1px); background-size: 40px 40px; }
+
+  .trust-strip { background: var(--ink); color: white; padding: 2.5rem 3rem; display: flex; align-items: center; justify-content: space-between; gap: 2rem; }
+  .trust-item { display: flex; align-items: center; gap: 0.75rem; }
+  .trust-icon { width: 36px; height: 36px; background: rgba(200,152,42,0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .trust-text strong { display: block; font-weight: 500; font-size: 0.9rem; }
+  .trust-text span { font-size: 0.78rem; color: rgba(255,255,255,0.5); }
+
+  .section { padding: 6rem 3rem; }
+  .section-header { margin-bottom: 3.5rem; }
+  .section-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--gold); font-weight: 500; margin-bottom: 0.75rem; }
+  h2 { font-family: 'DM Serif Display', serif; font-size: clamp(1.8rem, 3vw, 2.75rem); letter-spacing: -0.03em; line-height: 1.15; }
+  .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5px; background: var(--border); border: 1.5px solid var(--border); border-radius: 20px; overflow: hidden; }
+  .service-card { background: var(--paper); padding: 2rem; transition: background 0.2s; }
+  .service-card:hover { background: var(--paper-warm); }
+  .service-icon { width: 48px; height: 48px; background: var(--paper-warm); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem; font-size: 22px; }
+  .service-card h3 { font-family: 'DM Serif Display', serif; font-size: 1.2rem; margin-bottom: 0.6rem; letter-spacing: -0.02em; }
+  .service-card p { font-size: 0.875rem; color: var(--muted); line-height: 1.6; font-weight: 300; }
+
+  .reviews-section { padding: 5rem 3rem; background: white; }
+  .reviews-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 3rem; }
+  .review-card { border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; }
+  .stars { color: var(--gold); font-size: 14px; margin-bottom: 0.75rem; }
+  .review-text { font-size: 0.9rem; color: var(--ink-mid); line-height: 1.65; font-weight: 300; margin-bottom: 1rem; }
+  .reviewer { display: flex; align-items: center; gap: 10px; }
+  .avatar { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 500; flex-shrink: 0; }
+  .reviewer-info strong { display: block; font-size: 0.85rem; font-weight: 500; }
+  .reviewer-info span { font-size: 0.75rem; color: var(--muted); }
+
+  .contact-section { background: var(--paper-warm); padding: 5rem 3rem; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
+  .contact-info h2 { margin-bottom: 1rem; }
+  .contact-info p { color: var(--muted); font-weight: 300; margin-bottom: 2.5rem; font-size: 1rem; line-height: 1.7; }
+  .contact-detail { display: flex; align-items: center; gap: 12px; margin-bottom: 1rem; font-size: 0.95rem; }
+  .contact-detail .ci { width: 38px; height: 38px; background: white; border: 1px solid var(--border); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .contact-form { background: white; border: 1px solid var(--border); border-radius: 20px; padding: 2rem; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .form-group { margin-bottom: 1.25rem; }
+  .form-group label { display: block; font-size: 0.8rem; font-weight: 500; color: var(--muted); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .form-group input, .form-group select, .form-group textarea { width: 100%; border: 1px solid var(--border); border-radius: 10px; padding: 0.7rem 1rem; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; background: var(--paper); color: var(--ink); outline: none; transition: border-color 0.2s; }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--gold); }
+  .form-group textarea { height: 90px; resize: none; }
+  .form-consent { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 1.25rem; font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+  .form-consent input[type="checkbox"] { margin-top: 2px; flex-shrink: 0; accent-color: var(--gold); }
+  .form-consent a { color: var(--gold); }
+  .form-submit { width: 100%; background: var(--ink); color: white; border: none; padding: 0.9rem; border-radius: 100px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+  .form-submit:hover { background: var(--gold-dark); }
+  .form-success { display: none; text-align: center; padding: 2rem; color: #2d7a3a; background: #eaf7ec; border-radius: 12px; font-weight: 500; }
+
+  footer { background: var(--ink); color: rgba(255,255,255,0.5); padding: 2rem 3rem; display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; }
+  footer a { color: rgba(255,255,255,0.5); text-decoration: none; }
+  footer a:hover { color: white; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">
+    <div class="bolt"></div>
+    <span>Blitz Elektro</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#leistungen">Leistungen</a></li>
+    <li><a href="#referenzen">Referenzen</a></li>
+    <li><a href="#ueber-uns">Über uns</a></li>
+    <li><a href="#kontakt" class="nav-cta">Anfrage senden</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-badge">Verfügbar in ganz München & Umgebung</div>
+    <h1>Ihr Elektriker.<br>Schnell. <em>Zuverlässig.</em><br>Meisterbetrieb.</h1>
+    <p class="hero-sub">Von der Steckdose bis zur Hausinstallation — wir lösen Ihre Elektroarbeiten professionell, termingerecht und zum Festpreis.</p>
+    <div class="hero-actions">
+      <a href="#kontakt" class="btn-primary">Jetzt anfragen</a>
+      <a href="tel:+4989123456789" class="btn-ghost">089 123 456 78</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-grid-bg"></div>
+    <div class="hero-visual">
+      <div class="big-bolt"></div>
+      <div class="hero-stats">
+        <div class="stat"><span class="stat-num">12+</span><span class="stat-label">Jahre Erfahrung</span></div>
+        <div class="stat"><span class="stat-num">850+</span><span class="stat-label">Aufträge</span></div>
+        <div class="stat"><span class="stat-num">4.9★</span><span class="stat-label">Google Rating</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="trust-strip">
+  <div class="trust-item"><div class="trust-icon">⚡</div><div class="trust-text"><strong>Notdienst 24/7</strong><span>Auch am Wochenende</span></div></div>
+  <div class="trust-item"><div class="trust-icon">📋</div><div class="trust-text"><strong>Meisterbetrieb</strong><span>Eingetragen HWK München</span></div></div>
+  <div class="trust-item"><div class="trust-icon">💰</div><div class="trust-text"><strong>Festpreisgarantie</strong><span>Kein versteckter Aufschlag</span></div></div>
+  <div class="trust-item"><div class="trust-icon">🛡️</div><div class="trust-text"><strong>5 Jahre Garantie</strong><span>Auf alle Installationen</span></div></div>
+</div>
+
+<section class="section" id="leistungen">
+  <div class="section-header">
+    <p class="section-label">Unsere Leistungen</p>
+    <h2>Was wir für Sie tun</h2>
+  </div>
+  <div class="services-grid">
+    <div class="service-card"><div class="service-icon">🏠</div><h3>Hausinstallationen</h3><p>Elektroinstallationen im Neu- und Altbau, Schaltschrankbau, Zähleranlagen und Unterverteilungen.</p></div>
+    <div class="service-card"><div class="service-icon">💡</div><h3>Beleuchtung & Smart Home</h3><p>LED-Systeme, Deckeneinbaustrahler, dimmbare Lösungen und KNX-/Zigbee-Steuerung für Ihr Smart Home.</p></div>
+    <div class="service-card"><div class="service-icon">🔌</div><h3>Steckdosen & Leitungen</h3><p>Nachrüstung von Steckdosen, Datenleitungen, USB-Outlets und Multimedia-Verkabelung.</p></div>
+    <div class="service-card"><div class="service-icon">⚡</div><h3>Notdienst & Störungen</h3><p>Schnelle Hilfe bei Kurzschluss, Sicherungsausfall oder Totalausfall — auch nachts und am Wochenende.</p></div>
+    <div class="service-card"><div class="service-icon">🔒</div><h3>Sicherheitstechnik</h3><p>Einbau von Rauchwarnmeldern, Bewegungsmeldern, Gegensprechanlagen und Alarmanlagen.</p></div>
+    <div class="service-card"><div class="service-icon">🚗</div><h3>E-Auto Wallbox</h3><p>Installation von Wallboxen inklusive Anmeldung beim Netzbetreiber und BAFA-Abwicklung.</p></div>
+  </div>
+</section>
+
+<section class="reviews-section" id="referenzen">
+  <div class="section-header">
+    <p class="section-label">Kundenstimmen</p>
+    <h2>Was München über uns sagt</h2>
+  </div>
+  <div class="reviews-grid">
+    <div class="review-card">
+      <div class="stars">★★★★★</div>
+      <p class="review-text">Innerhalb von zwei Stunden war der Techniker da und hat den Kurzschluss behoben. Sehr kompetent und sauber gearbeitet. Klare Empfehlung!</p>
+      <div class="reviewer"><div class="avatar" style="background:#F2D98A;color:#7A5B10;">MK</div><div class="reviewer-info"><strong>Markus K.</strong><span>Schwabing · vor 2 Wochen</span></div></div>
+    </div>
+    <div class="review-card">
+      <div class="stars">★★★★★</div>
+      <p class="review-text">Wallbox für unser E-Auto installiert — alles reibungslos, Festpreis eingehalten, BAFA-Unterlagen kamen sofort. Super Erfahrung.</p>
+      <div class="reviewer"><div class="avatar" style="background:#E1F5EE;color:#0F6E56;">SR</div><div class="reviewer-info"><strong>Sandra R.</strong><span>Bogenhausen · vor 1 Monat</span></div></div>
+    </div>
+    <div class="review-card">
+      <div class="stars">★★★★★</div>
+      <p class="review-text">Smart-Home-System komplett neu installiert. Die Jungs wussten genau, was sie tun. Pünktlich, höflich, professionell. Werde sie wieder beauftragen.</p>
+      <div class="reviewer"><div class="avatar" style="background:#EEEDFE;color:#534AB7;">TH</div><div class="reviewer-info"><strong>Thomas H.</strong><span>Maxvorstadt · vor 3 Wochen</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="contact-section" id="ueber-uns">
+  <div class="contact-info">
+    <p class="section-label">Über uns & Kontakt</p>
+    <h2>Kostenlose Erstberatung anfragen</h2>
+    <p>Teilen Sie uns Ihr Anliegen mit und wir melden uns innerhalb von 2 Stunden. Für Notfälle sind wir rund um die Uhr erreichbar.</p>
+    <div class="contact-detail"><div class="ci">📞</div><span>089 123 456 78</span></div>
+    <div class="contact-detail"><div class="ci">✉️</div><span>info@blitz-elektro-muenchen.de</span></div>
+    <div class="contact-detail"><div class="ci">📍</div><span>Servicezone: München & 30 km Umkreis</span></div>
+    <div class="contact-detail"><div class="ci">🕐</div><span>Mo–Fr 7–19 Uhr · Notdienst 24/7</span></div>
+  </div>
+
+  <div class="contact-form" id="kontakt">
+    <div class="form-row">
+      <div class="form-group"><label>Vorname</label><input type="text" id="f-vorname" placeholder="Max"></div>
+      <div class="form-group"><label>Nachname</label><input type="text" id="f-nachname" placeholder="Mustermann"></div>
+    </div>
+    <div class="form-group"><label>Telefon</label><input type="tel" id="f-telefon" placeholder="089 …"></div>
+    <div class="form-group"><label>E-Mail</label><input type="email" id="f-email" placeholder="max@example.de"></div>
+    <div class="form-group"><label>Straße & Hausnummer</label><input type="text" id="f-strasse" placeholder="Musterstraße 12"></div>
+    <div class="form-row">
+      <div class="form-group"><label>PLZ</label><input type="text" id="f-plz" placeholder="80331"></div>
+      <div class="form-group"><label>Ort</label><input type="text" id="f-ort" placeholder="München"></div>
+    </div>
+    <div class="form-group">
+      <label>Leistung</label>
+      <select id="f-leistung">
+        <option value="">Bitte wählen …</option>
+        <option>Hausinstallation</option>
+        <option>Beleuchtung / Smart Home</option>
+        <option>Wallbox</option>
+        <option>Notdienst</option>
+        <option>Sicherheitstechnik</option>
+        <option>Sonstiges</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Ihre Nachricht</label><textarea id="f-nachricht" placeholder="Kurze Beschreibung des Auftrags …"></textarea></div>
+    <div class="form-consent">
+      <input type="checkbox" id="f-consent">
+      <label for="f-consent">Ich habe die <a href="datenschutz.html" target="_blank">Datenschutzerklärung</a> gelesen und bin mit der Verarbeitung meiner Daten zur Bearbeitung meiner Anfrage einverstanden.</label>
+    </div>
+    <button class="form-submit" onclick="submitForm()">Anfrage absenden →</button>
+    <div class="form-success" id="form-success">✓ Vielen Dank! Ihre Anfrage wurde erfolgreich gesendet. Wir melden uns innerhalb von 2 Stunden.</div>
+  </div>
+</section>
+
+<footer>
+  <span>© 2026 Blitz Elektro GmbH · Meisterbetrieb München</span>
+  <div style="display:flex;gap:1.5rem;">
+    <a href="rechtliches.html" target="_blank">Impressum</a>
+    <a href="datenschutz.html" target="_blank">Datenschutz</a>
+    <a href="agb.html" target="_blank">AGB</a>
+  </div>
+</footer>
+
+<script>
+function submitForm() {
+  const consent = document.getElementById('f-consent');
+  if (!consent.checked) { alert('Bitte stimmen Sie der Datenschutzerklärung zu.'); return; }
+  const vorname = document.getElementById('f-vorname').value.trim();
+  const nachname = document.getElementById('f-nachname').value.trim();
+  const leistung = document.getElementById('f-leistung').value;
+  if (!vorname || !nachname || !leistung) { alert('Bitte füllen Sie mindestens Name und gewünschte Leistung aus.'); return; }
+
+  const anfrage = {
+    id: Date.now(),
+    datum: new Date().toLocaleString('de-DE'),
+    vorname,
+    nachname,
+    telefon: document.getElementById('f-telefon').value,
+    email: document.getElementById('f-email').value,
+    strasse: document.getElementById('f-strasse').value,
+    plz: document.getElementById('f-plz').value,
+    ort: document.getElementById('f-ort').value,
+    leistung,
+    nachricht: document.getElementById('f-nachricht').value,
+    status: 'neu'
+  };
+
+  const existing = JSON.parse(localStorage.getItem('blitz_anfragen') || '[]');
+  existing.unshift(anfrage);
+  localStorage.setItem('blitz_anfragen', JSON.stringify(existing));
+
+  document.querySelector('.form-submit').style.display = 'none';
+  document.getElementById('form-success').style.display = 'block';
+}
+</script>
+</body>
+</html>

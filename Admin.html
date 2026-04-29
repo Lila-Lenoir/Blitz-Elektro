@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin – Blitz Elektro</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --gold: #C8982A; --gold-light: #F2D98A; --gold-dark: #7A5B10;
+    --ink: #1A1A18; --paper: #FAFAF7; --paper-warm: #F4F2EA;
+    --muted: #7A7A72; --border: rgba(0,0,0,0.09);
+    --green: #2d7a3a; --green-bg: #eaf7ec;
+    --orange: #b85c00; --orange-bg: #fff4e6;
+    --red: #a02020; --red-bg: #fdf0f0;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: #F0EFE9; color: var(--ink); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+
+  /* LOGIN */
+  .login-screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: var(--ink); }
+  .login-box { background: white; border-radius: 20px; padding: 2.5rem; width: 340px; text-align: center; }
+  .login-bolt { width: 48px; height: 48px; background: var(--gold); clip-path: polygon(60% 0%,100% 0%,40% 50%,80% 50%,0% 100%,20% 55%,-5% 55%,60% 0%); margin: 0 auto 1rem; }
+  .login-box h2 { font-family: 'DM Serif Display', serif; font-size: 1.4rem; margin-bottom: 0.25rem; }
+  .login-box p { font-size: 0.85rem; color: var(--muted); margin-bottom: 1.75rem; }
+  .login-box input { width: 100%; border: 1px solid var(--border); border-radius: 10px; padding: 0.7rem 1rem; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; margin-bottom: 0.75rem; outline: none; background: var(--paper); }
+  .login-box input:focus { border-color: var(--gold); }
+  .login-btn { width: 100%; background: var(--ink); color: white; border: none; padding: 0.85rem; border-radius: 100px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+  .login-btn:hover { background: var(--gold-dark); }
+  .login-error { color: #a02020; font-size: 0.82rem; margin-top: 0.5rem; display: none; }
+
+  /* LAYOUT */
+  .app { display: none; }
+  .sidebar { width: 230px; background: var(--ink); color: white; position: fixed; top: 0; left: 0; height: 100vh; display: flex; flex-direction: column; padding: 1.75rem 1.25rem; z-index: 10; }
+  .sidebar-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 2.5rem; }
+  .s-bolt { width: 28px; height: 28px; background: var(--gold); clip-path: polygon(60% 0%,100% 0%,40% 50%,80% 50%,0% 100%,20% 55%,-5% 55%,60% 0%); flex-shrink: 0; }
+  .sidebar-logo span { font-family: 'DM Serif Display', serif; font-size: 1.1rem; }
+  .sidebar-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.35); margin-bottom: 0.5rem; padding-left: 0.5rem; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 0.6rem 0.75rem; border-radius: 10px; cursor: pointer; font-size: 0.875rem; color: rgba(255,255,255,0.65); transition: all 0.15s; margin-bottom: 2px; }
+  .nav-item:hover { background: rgba(255,255,255,0.07); color: white; }
+  .nav-item.active { background: rgba(200,152,42,0.18); color: var(--gold-light); }
+  .nav-item .icon { font-size: 15px; width: 20px; text-align: center; }
+  .badge { background: var(--gold); color: white; font-size: 0.7rem; font-weight: 600; padding: 1px 7px; border-radius: 100px; margin-left: auto; }
+  .sidebar-footer { margin-top: auto; }
+  .logout-btn { width: 100%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); padding: 0.6rem; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; cursor: pointer; transition: all 0.2s; }
+  .logout-btn:hover { background: rgba(255,255,255,0.1); color: white; }
+
+  .main { margin-left: 230px; padding: 2.5rem 2.5rem 4rem; }
+  .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+  .topbar h1 { font-family: 'DM Serif Display', serif; font-size: 1.75rem; letter-spacing: -0.02em; }
+  .topbar-right { display: flex; align-items: center; gap: 1rem; }
+  .refresh-btn { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 0.5rem 1rem; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; cursor: pointer; color: var(--muted); transition: all 0.2s; }
+  .refresh-btn:hover { border-color: var(--gold); color: var(--ink); }
+
+  /* KPI CARDS */
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem; }
+  .kpi { background: white; border: 1px solid var(--border); border-radius: 16px; padding: 1.25rem 1.5rem; }
+  .kpi-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 0.5rem; }
+  .kpi-val { font-family: 'DM Serif Display', serif; font-size: 2rem; line-height: 1; color: var(--ink); }
+  .kpi-sub { font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem; }
+  .kpi.highlight { background: var(--ink); border-color: var(--ink); }
+  .kpi.highlight .kpi-label { color: rgba(255,255,255,0.45); }
+  .kpi.highlight .kpi-val { color: var(--gold-light); }
+  .kpi.highlight .kpi-sub { color: rgba(255,255,255,0.35); }
+
+  /* FILTERS */
+  .filters { display: flex; gap: 0.75rem; margin-bottom: 1.5rem; align-items: center; flex-wrap: wrap; }
+  .filter-btn { background: white; border: 1px solid var(--border); border-radius: 100px; padding: 0.4rem 1rem; font-size: 0.82rem; cursor: pointer; font-family: 'DM Sans', sans-serif; color: var(--muted); transition: all 0.15s; }
+  .filter-btn:hover { border-color: var(--gold); color: var(--ink); }
+  .filter-btn.active { background: var(--ink); color: white; border-color: var(--ink); }
+  .search-box { margin-left: auto; background: white; border: 1px solid var(--border); border-radius: 10px; padding: 0.4rem 0.9rem; font-size: 0.85rem; font-family: 'DM Sans', sans-serif; color: var(--ink); outline: none; width: 200px; }
+  .search-box:focus { border-color: var(--gold); }
+
+  /* TABLE */
+  .table-wrap { background: white; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th { background: var(--paper-warm); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 500; padding: 0.9rem 1.25rem; text-align: left; border-bottom: 1px solid var(--border); }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; cursor: pointer; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--paper-warm); }
+  td { padding: 0.9rem 1.25rem; font-size: 0.875rem; vertical-align: middle; }
+  .td-name { font-weight: 500; }
+  .td-meta { font-size: 0.78rem; color: var(--muted); }
+
+  .status-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 0.75rem; font-weight: 500; padding: 0.25rem 0.7rem; border-radius: 100px; }
+  .status-badge.neu { background: #EFF6FF; color: #1d4ed8; }
+  .status-badge.in-bearbeitung { background: var(--orange-bg); color: var(--orange); }
+  .status-badge.abgeschlossen { background: var(--green-bg); color: var(--green); }
+  .status-badge.abgelehnt { background: var(--red-bg); color: var(--red); }
+  .status-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+  .empty-state { text-align: center; padding: 4rem 2rem; color: var(--muted); }
+  .empty-state .e-icon { font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.4; }
+  .empty-state p { font-size: 0.9rem; }
+
+  /* DETAIL MODAL */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 200; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: white; border-radius: 20px; width: 560px; max-height: 85vh; overflow-y: auto; padding: 2rem; position: relative; }
+  .modal-close { position: absolute; top: 1.25rem; right: 1.25rem; background: var(--paper-warm); border: none; border-radius: 8px; width: 32px; height: 32px; cursor: pointer; font-size: 1rem; color: var(--muted); }
+  .modal-close:hover { color: var(--ink); }
+  .modal h3 { font-family: 'DM Serif Display', serif; font-size: 1.4rem; margin-bottom: 0.25rem; }
+  .modal-date { font-size: 0.8rem; color: var(--muted); margin-bottom: 1.5rem; }
+  .modal-section { margin-bottom: 1.5rem; }
+  .modal-section-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold); font-weight: 500; margin-bottom: 0.75rem; }
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  .info-item label { display: block; font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.2rem; }
+  .info-item span { font-size: 0.9rem; font-weight: 400; }
+  .modal-nachricht { background: var(--paper-warm); border-radius: 12px; padding: 1rem; font-size: 0.875rem; color: var(--ink); line-height: 1.6; font-weight: 300; }
+  .modal-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+  .action-btn { flex: 1; min-width: 120px; padding: 0.6rem 1rem; border-radius: 100px; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: white; color: var(--ink); transition: all 0.15s; text-align: center; }
+  .action-btn:hover { border-color: var(--gold); }
+  .action-btn.primary { background: var(--ink); color: white; border-color: var(--ink); }
+  .action-btn.primary:hover { background: var(--gold-dark); border-color: var(--gold-dark); }
+  .action-btn.danger { color: var(--red); border-color: rgba(160,32,32,0.2); }
+  .action-btn.danger:hover { background: var(--red-bg); border-color: var(--red); }
+
+  .demo-note { background: #EFF6FF; border: 1px solid #bfdbfe; border-radius: 12px; padding: 0.75rem 1rem; font-size: 0.8rem; color: #1d4ed8; margin-bottom: 1.5rem; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-screen" id="login-screen">
+  <div class="login-box">
+    <div class="login-bolt"></div>
+    <h2>Admin-Bereich</h2>
+    <p>Blitz Elektro München</p>
+    <input type="text" id="login-user" placeholder="Benutzername" autocomplete="username">
+    <input type="password" id="login-pass" placeholder="Passwort" autocomplete="current-password">
+    <button class="login-btn" onclick="doLogin()">Anmelden</button>
+    <p class="login-error" id="login-error">Ungültige Anmeldedaten.</p>
+    <p style="font-size:0.75rem;color:var(--muted);margin-top:1rem;">Demo: admin / blitz2026</p>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="app">
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="s-bolt"></div>
+      <span>Blitz Elektro</span>
+    </div>
+    <div class="sidebar-label">Navigation</div>
+    <div class="nav-item active"><span class="icon">📋</span> Anfragen <span class="badge" id="nav-badge">0</span></div>
+    <div class="nav-item" style="margin-top:0.25rem;"><span class="icon">🔗</span> <a href="index.html" target="_blank" style="color:inherit;text-decoration:none;">Zur Website</a></div>
+    <div class="sidebar-footer">
+      <button class="logout-btn" onclick="doLogout()">↩ Abmelden</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <h1>Kundenanfragen</h1>
+      <div class="topbar-right">
+        <button class="refresh-btn" onclick="loadAnfragen()">↻ Aktualisieren</button>
+      </div>
+    </div>
+
+    <div class="demo-note">ℹ️ Demo-Modus: Anfragen werden lokal im Browser gespeichert (localStorage). Im Produktiveinsatz würde hier eine Datenbankanbindung erfolgen.</div>
+
+    <div class="kpi-grid">
+      <div class="kpi highlight"><div class="kpi-label">Gesamt</div><div class="kpi-val" id="kpi-gesamt">0</div><div class="kpi-sub">Alle Anfragen</div></div>
+      <div class="kpi"><div class="kpi-label">Neu</div><div class="kpi-val" id="kpi-neu">0</div><div class="kpi-sub">Unbearbeitet</div></div>
+      <div class="kpi"><div class="kpi-label">In Bearbeitung</div><div class="kpi-val" id="kpi-bearbeitung">0</div><div class="kpi-sub">Aktive Aufträge</div></div>
+      <div class="kpi"><div class="kpi-label">Abgeschlossen</div><div class="kpi-val" id="kpi-done">0</div><div class="kpi-sub">Erledigt</div></div>
+    </div>
+
+    <div class="filters">
+      <button class="filter-btn active" onclick="setFilter('alle', this)">Alle</button>
+      <button class="filter-btn" onclick="setFilter('neu', this)">Neu</button>
+      <button class="filter-btn" onclick="setFilter('in-bearbeitung', this)">In Bearbeitung</button>
+      <button class="filter-btn" onclick="setFilter('abgeschlossen', this)">Abgeschlossen</button>
+      <button class="filter-btn" onclick="setFilter('abgelehnt', this)">Abgelehnt</button>
+      <input class="search-box" type="text" placeholder="Suche nach Name, Ort …" oninput="renderTable()" id="search-input">
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Kunde</th>
+            <th>Leistung</th>
+            <th>Adresse</th>
+            <th>Datum</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="anfragen-table"></tbody>
+      </table>
+      <div class="empty-state" id="empty-state" style="display:none;">
+        <div class="e-icon">📭</div>
+        <p>Noch keine Anfragen eingegangen.<br>Einreichungen aus dem Kontaktformular erscheinen hier automatisch.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h3 id="m-name"></h3>
+    <div class="modal-date" id="m-date"></div>
+
+    <div class="modal-section">
+      <div class="modal-section-label">Kontaktdaten</div>
+      <div class="info-grid">
+        <div class="info-item"><label>Telefon</label><span id="m-tel">—</span></div>
+        <div class="info-item"><label>E-Mail</label><span id="m-email">—</span></div>
+        <div class="info-item" style="grid-column:1/-1"><label>Adresse</label><span id="m-adresse">—</span></div>
+      </div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-label">Auftrag</div>
+      <div class="info-item" style="margin-bottom:0.75rem"><label>Leistung</label><span id="m-leistung">—</span></div>
+      <div class="modal-nachricht" id="m-nachricht"></div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-label">Status ändern</div>
+      <select id="m-status-select" style="width:100%;border:1px solid var(--border);border-radius:10px;padding:0.65rem 1rem;font-family:'DM Sans',sans-serif;font-size:0.875rem;background:var(--paper);outline:none;">
+        <option value="neu">Neu</option>
+        <option value="in-bearbeitung">In Bearbeitung</option>
+        <option value="abgeschlossen">Abgeschlossen</option>
+        <option value="abgelehnt">Abgelehnt</option>
+      </select>
+    </div>
+
+    <div class="modal-actions">
+      <button class="action-btn primary" onclick="saveStatus()">Status speichern</button>
+      <button class="action-btn danger" onclick="deleteAnfrage()">Anfrage löschen</button>
+      <button class="action-btn" onclick="closeModal()">Schließen</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let allAnfragen = [];
+  let currentFilter = 'alle';
+  let currentId = null;
+
+  // Seed demo data if empty
+  function seedDemo() {
+    const existing = JSON.parse(localStorage.getItem('blitz_anfragen') || '[]');
+    if (existing.length > 0) return;
+    const demos = [
+      { id: 1700000001, datum: '28.04.2026, 09:14', vorname: 'Thomas', nachname: 'Huber', telefon: '0176 1234 5678', email: 'thomas.huber@email.de', strasse: 'Leopoldstraße 44', plz: '80802', ort: 'München', leistung: 'Wallbox', nachricht: 'Benötige eine Wallbox für meinen neuen BMW iX. Garage vorhanden, Leerrohr bereits gelegt.', status: 'neu' },
+      { id: 1700000002, datum: '27.04.2026, 14:32', vorname: 'Sandra', nachname: 'Reimer', telefon: '089 44 55 66 7', email: 'sandra.r@gmx.de', strasse: 'Ismaninger Str. 12', plz: '81675', ort: 'München', leistung: 'Beleuchtung / Smart Home', nachricht: 'Wohnzimmer und Küche sollen auf dimmbare LED-Beleuchtung mit Zigbee-Steuerung umgerüstet werden.', status: 'in-bearbeitung' },
+      { id: 1700000003, datum: '25.04.2026, 11:05', vorname: 'Markus', nachname: 'Klein', telefon: '0172 9876 543', email: 'mklein@web.de', strasse: 'Nymphenburger Str. 88', plz: '80636', ort: 'München', leistung: 'Hausinstallation', nachricht: 'Altbau-Sanierung, komplette Neuinstallation auf 3 Etagen. Bitte um Besichtigungstermin.', status: 'abgeschlossen' },
+    ];
+    localStorage.setItem('blitz_anfragen', JSON.stringify(demos));
+  }
+
+  function doLogin() {
+    const u = document.getElementById('login-user').value;
+    const p = document.getElementById('login-pass').value;
+    if (u === 'admin' && p === 'blitz2026') {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      seedDemo();
+      loadAnfragen();
+    } else {
+      document.getElementById('login-error').style.display = 'block';
+    }
+  }
+
+  document.getElementById('login-pass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+  function doLogout() {
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
+  }
+
+  function loadAnfragen() {
+    allAnfragen = JSON.parse(localStorage.getItem('blitz_anfragen') || '[]');
+    updateKPIs();
+    renderTable();
+  }
+
+  function updateKPIs() {
+    document.getElementById('kpi-gesamt').textContent = allAnfragen.length;
+    document.getElementById('kpi-neu').textContent = allAnfragen.filter(a => a.status === 'neu').length;
+    document.getElementById('kpi-bearbeitung').textContent = allAnfragen.filter(a => a.status === 'in-bearbeitung').length;
+    document.getElementById('kpi-done').textContent = allAnfragen.filter(a => a.status === 'abgeschlossen').length;
+    const neuCount = allAnfragen.filter(a => a.status === 'neu').length;
+    document.getElementById('nav-badge').textContent = neuCount;
+  }
+
+  function setFilter(f, el) {
+    currentFilter = f;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    renderTable();
+  }
+
+  function renderTable() {
+    const search = document.getElementById('search-input').value.toLowerCase();
+    let data = allAnfragen;
+    if (currentFilter !== 'alle') data = data.filter(a => a.status === currentFilter);
+    if (search) data = data.filter(a =>
+      (a.vorname + ' ' + a.nachname + ' ' + a.ort + ' ' + a.leistung).toLowerCase().includes(search)
+    );
+
+    const tbody = document.getElementById('anfragen-table');
+    const empty = document.getElementById('empty-state');
+
+    if (data.length === 0) {
+      tbody.innerHTML = '';
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+
+    tbody.innerHTML = data.map(a => `
+      <tr onclick="openModal(${a.id})">
+        <td>
+          <div class="td-name">${a.vorname} ${a.nachname}</div>
+          <div class="td-meta">${a.telefon || '—'}</div>
+        </td>
+        <td>${a.leistung || '—'}</td>
+        <td>
+          <div>${a.strasse || '—'}</div>
+          <div class="td-meta">${a.plz ? a.plz + ' ' + a.ort : a.ort || '—'}</div>
+        </td>
+        <td><div class="td-meta">${a.datum}</div></td>
+        <td><span class="status-badge ${a.status}">${statusLabel(a.status)}</span></td>
+      </tr>
+    `).join('');
+  }
+
+  function statusLabel(s) {
+    return { 'neu': 'Neu', 'in-bearbeitung': 'In Bearbeitung', 'abgeschlossen': 'Abgeschlossen', 'abgelehnt': 'Abgelehnt' }[s] || s;
+  }
+
+  function openModal(id) {
+    const a = allAnfragen.find(x => x.id === id);
+    if (!a) return;
+    currentId = id;
+    document.getElementById('m-name').textContent = a.vorname + ' ' + a.nachname;
+    document.getElementById('m-date').textContent = 'Eingegangen am ' + a.datum;
+    document.getElementById('m-tel').textContent = a.telefon || '—';
+    document.getElementById('m-email').textContent = a.email || '—';
+    const adresse = [a.strasse, a.plz && a.ort ? a.plz + ' ' + a.ort : a.ort].filter(Boolean).join(', ');
+    document.getElementById('m-adresse').textContent = adresse || '—';
+    document.getElementById('m-leistung').textContent = a.leistung || '—';
+    document.getElementById('m-nachricht').textContent = a.nachricht || '(Keine Nachricht)';
+    document.getElementById('m-status-select').value = a.status;
+    document.getElementById('modal').classList.add('open');
+  }
+
+  function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+    currentId = null;
+  }
+
+  function saveStatus() {
+    const newStatus = document.getElementById('m-status-select').value;
+    allAnfragen = allAnfragen.map(a => a.id === currentId ? { ...a, status: newStatus } : a);
+    localStorage.setItem('blitz_anfragen', JSON.stringify(allAnfragen));
+    updateKPIs();
+    renderTable();
+    closeModal();
+  }
+
+  function deleteAnfrage() {
+    if (!confirm('Anfrage wirklich löschen?')) return;
+    allAnfragen = allAnfragen.filter(a => a.id !== currentId);
+    localStorage.setItem('blitz_anfragen', JSON.stringify(allAnfragen));
+    updateKPIs();
+    renderTable();
+    closeModal();
+  }
+
+  document.getElementById('modal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+</script>
+</body>
+</html>
